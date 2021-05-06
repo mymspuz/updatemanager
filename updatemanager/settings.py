@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'organization.apps.OrganizationConfig',
     'database.apps.DatabaseConfig',
+    'platform1c.apps.Platform1CConfig',
 ]
 
 MIDDLEWARE = [
