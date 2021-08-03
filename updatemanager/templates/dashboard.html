@@ -1,0 +1,167 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <style>
+        .ct-bar {
+            stroke-linecap: butt;
+            stroke-width: 40px;
+        }
+        .ct-chart .ct-series.stroke-green .ct-bar {
+         stroke: green;
+        }
+        .ct-chart .ct-series.stroke-yellow .ct-bar {
+         stroke: rgba(255, 167, 38, 0.8);
+        }
+        .ct-chart .ct-series.stroke-red .ct-bar {
+          stroke: rgba(230, 20, 20, 0.8);
+        }
+        .oname {
+            width: 15%;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %}
+    <div class="row justify-content-md-center">
+        <div class="col-12 mb-4">
+            <div class="accordion" id="accordionPricing">
+                {% for o in organizations %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ o.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ o.id }}" aria-expanded="true" aria-controls="collapse{{ o.id }}">
+                        <div class="oname">{{ o.name }}</div>
+                        {% for s, c in o.status.items %}
+                            <span class="badge badge-lg bg-{{ s }} ms-1">{{ c }}</span>
+                        {% endfor %}
+                        {% if not o.org_backup %}
+                        <span class="fas fa-archive ms-1" style="color: red;"></span>
+                        {% endif %}
+                    </button>
+                  </h2>
+                  <div id="collapse{{ o.id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ o.id }}" data-bs-parent="#accordionPricing">
+                    <div class="accordion-body">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap mb-0 rounded text-center" id="company">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="border-0 rounded-start">Наименование</th>
+                                        <th class="border-0">#</th>
+                                        <th class="border-0">Бэкап</th>
+                                        <th class="border-0">Алиас</th>
+                                        <th class="border-0">Конфа</th>
+                                        <th class="border-0">Текущая</th>
+                                        <th class="border-0 rounded-end">Актуальная</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for d in o.db %}
+                                    <!-- Item -->
+                                    <tr>
+                                        <td class="border-0">
+                                            <div>
+                                                <span class="h6">
+                                                    {{ d.model.name }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="border-0 font-weight-bold">
+                                            {% if d.model.version_id.name != d.actual_v.name %}
+                                            <a
+                                                href="#"
+                                                id="{{ d.model.pk }}"
+                                                class="btn btn-sm btn-outline-danger myactual"
+                                            >
+                                                <span class="fas fa-check" style="color: red;"></span>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="border-0 font-weight-bold">
+                                            {% if not d.db_backup %}
+                                            <a
+                                                href="#"
+                                                id="b{{ d.model.pk }}"
+                                                class="btn btn-sm btn-outline-danger myarchive"
+                                            >
+                                                <span class="fas fa-archive" style="color: red;"></span>
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="border-0 font-weight-bold">
+                                            {{ d.model.alias }}
+                                        </td>
+                                        <td class="border-0 font-weight-bold">
+                                            {{ d.model.version_id.config_id }}
+                                        </td>
+                                        <td class="border-0 font-weight-bold">
+                                            <span id="v{{ d.model.pk }}">{{ d.model.version_id }}</span>
+                                            {% if not d.status == 'success' %}
+                                            <span id="t{{ d.model.pk }}">
+                                                <span
+                                                        class="text-{{ d.status }}"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="right"
+                                                        title="{{ d.list_update|join:', ' }}"
+                                                >
+                                                    <span class="fas fa-angle-up"></span>
+                                                    <span class="font-weight-bold">{{ d.list_update|length }}</span>
+                                                </span>
+                                            </span>
+                                            {% endif %}
+                                            {% if d.ple %}
+                                            ple
+                                            {% endif %}
+                                        </td>
+                                        <td class="border-0 font-weight-bold">
+                                            <span id="a{{ d.model.pk }}">{{ d.actual_v }}</span>
+                                        </td>
+                                    </tr>
+                                    <!-- End of Item -->
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+$(document).ready(function(){
+    $('.myactual').click(function () {
+        $.ajax({
+            url: "/actual/" + this.id,
+            success: function (response) {
+                $('#' + response.id).remove()
+                $('#t' + response.id).remove()
+                $('#v' + response.id).text($('#a' + response.id).text())
+            },
+            error: function (response) {
+                console.log(response.responseJSON.errors)
+            }
+        });
+        return false;
+    });
+    $('.myarchive').click(function () {
+        $.ajax({
+            url: "/backup/" + this.id,
+            success: function (response) {
+                $('#' + response.id).remove()
+            },
+            error: function (response) {
+                console.log(response.responseJSON.errors)
+            }
+        });
+        return false;
+    });
+});
+</script>
+{% endblock javascripts %}
