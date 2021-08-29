@@ -1112,6 +1112,18 @@ h6, .h6 {
     font-size: 1rem;
 }
 
+@media (max-width: 1200px) {
+    h6, .h6 {
+        font-size: .7rem;
+    }
+    .table thead th {
+        font-size: 0.55rem!important;
+    }
+    .table td, .table th {
+        font-size: 0.75rem!important;
+    }
+}
+
 p {
     margin-top: 0;
     margin-bottom: 1rem;

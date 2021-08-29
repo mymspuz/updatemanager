@@ -22,3 +22,6 @@ urlpatterns = [
     path('', include('dashboard.urls')),
     path('statistics1c/', include('statistics1c.urls')),
 ]
+
+handler404 = 'updatemanager.views.page_not_found_view'
+handler500 = 'updatemanager.views.page_server_error_view'

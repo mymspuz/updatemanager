@@ -23,12 +23,12 @@ CORE_DIR = Path(__file__).resolve().parent
 SECRET_KEY = 'django-insecure-wh@u#vokle8yoa87k4f7sbnu19-ben+j(&2f%#m4huopny5jud'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
 
@@ -133,7 +133,3 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 INTERNAL_IPS = ['127.0.0.1']
-
-if DEBUG:
-    import mimetypes
-    mimetypes.add_type("application/javascript", ".js", True)

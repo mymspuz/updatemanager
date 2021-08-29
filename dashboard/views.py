@@ -15,7 +15,7 @@ def main(request, aid=0, bid=''):
         if set_actual(aid):
             return JsonResponse({'id': aid}, status=200)
         else:
-            return JsonResponse({'errors': 'Not Found'}, status=400)
+            return JsonResponse({'errors': 'Not Found'}, status=404)
     if bid:
         if set_backup(bid):
             return JsonResponse({'id': bid}, status=200)
